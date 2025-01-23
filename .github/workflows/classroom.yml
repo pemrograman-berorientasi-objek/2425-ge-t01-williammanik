@@ -1,0 +1,102 @@
+name: Autograding Tests
+'on':
+- workflow_dispatch
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: t01&#45;01&#45;01
+      id: t01-45-01-45-01
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: t01&#45;01&#45;01
+        setup-command: make compile
+        command: make -s test_01
+        input: |
+          create-account
+          Wiro Sableng
+          wirsab
+        expected-output: 'wirsab|Wiro Sableng|0.0
+
+          '
+        comparison-method: exact
+        timeout: 1
+        max-score: 20
+    - name: t01&#45;01&#45;02
+      id: t01-45-01-45-02
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: t01&#45;01&#45;02
+        setup-command: make compile
+        command: make -s test_01
+        input: |
+          create-account
+          Jaka Sembung
+          jaksem
+        expected-output: 'jaksem|Jaka Sembung|0.0
+
+          '
+        comparison-method: exact
+        timeout: 1
+        max-score: 20
+    - name: t01&#45;02&#45;01
+      id: t01-45-02-45-01
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: t01&#45;02&#45;01
+        setup-command: make compile
+        command: make -s test_02
+        input: |
+          create-account
+          Wiro Sableng
+          wirsab
+          create-transaction
+          wirsab
+          24.0
+          2023/02/14 14:14:14
+          Weekly income
+        expected-output: |
+          wirsab|Wiro Sableng|0.0
+          1|wirsab|24.0|2023/02/14 14:14:14|Weekly income|24.0
+        comparison-method: exact
+        timeout: 1
+        max-score: 30
+    - name: t01&#45;02&#45;02
+      id: t01-45-02-45-02
+      uses: classroom-resources/autograding-io-grader@v1
+      with:
+        test-name: t01&#45;02&#45;02
+        setup-command: make compile
+        command: make -s test_02
+        input: |
+          create-account
+          Jaka Sembung
+          jaksem
+          create-transaction
+          jaksem
+          29.2
+          2023/02/14 14:14:14
+          Remote work
+        expected-output: |
+          jaksem|Jaka Sembung|0.0
+          1|jaksem|29.2|2023/02/14 14:14:14|Remote work|29.2
+        comparison-method: exact
+        timeout: 1
+        max-score: 30
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        T01-45-01-45-01_RESULTS: "${{steps.t01-45-01-45-01.outputs.result}}"
+        T01-45-01-45-02_RESULTS: "${{steps.t01-45-01-45-02.outputs.result}}"
+        T01-45-02-45-01_RESULTS: "${{steps.t01-45-02-45-01.outputs.result}}"
+        T01-45-02-45-02_RESULTS: "${{steps.t01-45-02-45-02.outputs.result}}"
+      with:
+        runners: t01-45-01-45-01,t01-45-01-45-02,t01-45-02-45-01,t01-45-02-45-02
